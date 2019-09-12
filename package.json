@@ -1,0 +1,54 @@
+{
+  "name": "react-css-modules.macro",
+  "description": "Babel macro for binding css modules to styleName attribute",
+  "version": "0.1.0",
+  "author": {
+    "name": "Bohdan Ptyts",
+    "url": "https://github.com/bohdanbirdie"
+  },
+  "main": "dist/react-css-modules.macro.js",
+  "license": "MIT",
+  "files": [
+    "dist/"
+  ],
+  "keywords": [
+    "webpack",
+    "babel",
+    "babel-macros",
+    "babel-plugin-macros"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bohdanbirdie/react-css-modules.macro.git"
+  },
+  "scripts": {
+    "test": "jest --coverage",
+    "format": "prettier --write",
+    "prepare": "npm run build",
+    "build": "microbundle -o dist src/{index,bindStyleName}.js",
+    "precommit": "lint-staged"
+  },
+  "dependencies": {
+    "babel-plugin-macros": "^2.6.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/preset-react": "^7.0.0",
+    "babel-plugin-tester": "^7.0.1",
+    "husky": "^3.0.5",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.2.5",
+    "microbundle": "^0.11.0",
+    "prettier": "^1.18.2"
+  },
+  "jest": {
+    "testRegex": "__tests__/.*.test.js$"
+  },
+  "lint-staged": {
+    "*.{js,md}": [
+      "prettier --write",
+      "git add -A"
+    ]
+  }
+}
