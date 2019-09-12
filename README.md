@@ -31,19 +31,18 @@ Since CRA support [babel-plugin-macros](https://github.com/kentcdodds/babel-plug
 ```JavaScript
 import { macro } from 'react-css-modules.macro';
 import React, { Component } from 'react';
-import styles from './Button.module.css'; // Import css modules stylesheet as styles
-import './another-stylesheet.css'; // Import regular stylesheet
+import styles from './Button.module.css';
+import './another-stylesheet.css';
 
 macro(styles)
 
 class Button extends Component {
   render() {
-    // reference as a js object
     return (
-	<button className="some_global_style" styleName="styles-file-style">
-		Error Button
-	</button>
-	)
+      <button className="some_global_style" styleName="styles-file-style">
+        Error Button
+      </button>
+	  )
   }
 }
 ```
@@ -61,13 +60,15 @@ const _getStyleName = _bindStyleNames(styles);
 
 class Button extends Component {
   render() {
-    // reference as a js object
-    return <button className={"some_global_style" + _getStyleName("styles-file-style")}>
-		Error Button
-	</button>;
+    return (
+      <button className={"some_global_style" + _getStyleName("styles-file-style")}>
+        Error Button
+      </button>
+    );
   }
 
-}```
+}
+```
 
 
 
