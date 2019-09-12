@@ -12,7 +12,6 @@
     "dist/"
   ],
   "keywords": [
-    "webpack",
     "babel",
     "babel-macros",
     "babel-plugin-macros"
