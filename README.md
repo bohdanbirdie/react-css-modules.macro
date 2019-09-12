@@ -4,7 +4,7 @@
 
 Inspired by [babel-plugin-react-css-modules](https://github.com/gajus/babel-plugin-react-css-modules)
 
-## Motivation
+## 🙌 Motivation
 
 With support of CSS Loader - CSS modules became a common use case, especially in [Create React App](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
 One of the downsides is that you are forced to access styles map via object keys which is not so handy.
@@ -26,7 +26,7 @@ One of the solutions is using the [babel-plugin-react-css-modules](https://githu
 
 Since CRA support [babel-plugin-macros](https://github.com/kentcdodds/babel-plugin-macros) - we can take andatage of that and still have `styleName` attribute be mapped to imported css modules.
 
-## Usage
+## 📦 Usage
 
 ```JavaScript
 import { macro } from 'react-css-modules.macro';
@@ -69,9 +69,12 @@ class Button extends Component {
 
 }
 ```
+## 🛣 Roadmap
+- [ ] Improve performance
+- [ ] Add tests for `bindStyleName` helper
+- [ ] Add config support
 
 
-
-## License
+## 🗒 License
 
 MIT
