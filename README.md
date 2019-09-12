@@ -42,14 +42,14 @@ class Button extends Component {
       <button className="some_global_style" styleName="styles-file-style">
         Error Button
       </button>
-	  )
+    )
   }
 }
 ```
 
 Will be converted to
 
-````JavaScript
+```JavaScript
 import _bindStyleNames from "react-css-modules.macro'/dist/bindStyleName";
 import React, { Component } from 'react';
 import styles from './Button.module.css'; // Import css modules stylesheet as styles
@@ -75,4 +75,3 @@ class Button extends Component {
 ## License
 
 MIT
-````
