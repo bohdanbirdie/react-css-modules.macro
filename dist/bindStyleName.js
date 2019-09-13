@@ -1,5 +1,10 @@
-function t(r) {
-  return (t =
+var t,
+  r =
+    (t = require("memoizee")) && "object" == typeof t && "default" in t
+      ? t.default
+      : t;
+function n(t) {
+  return (n =
     "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
       ? function(t) {
           return typeof t;
@@ -11,28 +16,31 @@ function t(r) {
             t !== Symbol.prototype
             ? "symbol"
             : typeof t;
-        })(r);
+        })(t);
 }
-var r = function(t, r) {
+var e = function(t, r) {
   return t
     .map(function(t) {
       return r[t] || t;
     })
     .join(" ");
 };
-module.exports = function(n) {
-  return function(o) {
-    if (o) {
-      if ("string" == typeof o) return " " + r(o.split(" "), n);
-      if (Array.isArray(o)) return " " + r(o, n);
-      if ("object" === t(o)) {
-        var e = Object.keys(o).filter(function(t) {
-          return o[t];
-        });
-        return " " + r(e, n);
+module.exports = function(t) {
+  return r(
+    function(r) {
+      if (r) {
+        if (Array.isArray(r)) return " ".concat(e(r, t));
+        if ("string" == typeof r) return " ".concat(e(r.split(" "), t));
+        if ("object" === n(r)) {
+          var o = Object.keys(r).filter(function(t) {
+            return r[t];
+          });
+          return " ".concat(e(o, t));
+        }
       }
-    }
-    return "";
-  };
+      return "";
+    },
+    { length: 1, maxAge: 5e3, primitive: !0 },
+  );
 };
 //# sourceMappingURL=bindStyleName.js.map

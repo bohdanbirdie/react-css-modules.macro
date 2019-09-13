@@ -1,46 +1,50 @@
-!(function(t, n) {
+!(function(e, t) {
   "object" == typeof exports && "undefined" != typeof module
-    ? (module.exports = n())
+    ? (module.exports = t(require("memoizee")))
     : "function" == typeof define && define.amd
-    ? define(n)
-    : (t.reactCssModulesMacro = n());
-})(this, function() {
-  function t(n) {
+    ? define(["memoizee"], t)
+    : (e.reactCssModulesMacro = t(e.memoizee));
+})(this, function(e) {
+  function t(e) {
     return (t =
       "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
-        ? function(t) {
-            return typeof t;
+        ? function(e) {
+            return typeof e;
           }
-        : function(t) {
-            return t &&
+        : function(e) {
+            return e &&
               "function" == typeof Symbol &&
-              t.constructor === Symbol &&
-              t !== Symbol.prototype
+              e.constructor === Symbol &&
+              e !== Symbol.prototype
               ? "symbol"
-              : typeof t;
-          })(n);
+              : typeof e;
+          })(e);
   }
-  var n = function(t, n) {
-    return t
-      .map(function(t) {
-        return n[t] || t;
+  e = e && e.hasOwnProperty("default") ? e.default : e;
+  var n = function(e, t) {
+    return e
+      .map(function(e) {
+        return t[e] || e;
       })
       .join(" ");
   };
   return function(o) {
-    return function(e) {
-      if (e) {
-        if ("string" == typeof e) return " " + n(e.split(" "), o);
-        if (Array.isArray(e)) return " " + n(e, o);
-        if ("object" === t(e)) {
-          var r = Object.keys(e).filter(function(t) {
-            return e[t];
-          });
-          return " " + n(r, o);
+    return e(
+      function(e) {
+        if (e) {
+          if (Array.isArray(e)) return " ".concat(n(e, o));
+          if ("string" == typeof e) return " ".concat(n(e.split(" "), o));
+          if ("object" === t(e)) {
+            var r = Object.keys(e).filter(function(t) {
+              return e[t];
+            });
+            return " ".concat(n(r, o));
+          }
         }
-      }
-      return "";
-    };
+        return "";
+      },
+      { length: 1, maxAge: 5e3, primitive: !0 },
+    );
   };
 });
 //# sourceMappingURL=bindStyleName.umd.js.map

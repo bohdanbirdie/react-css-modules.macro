@@ -5,112 +5,117 @@
     ? define(n)
     : (e.reactCssModulesMacro = n());
 })(this, function() {
-  var e = require("babel-plugin-macros").createMacro,
-    n = require("../package.json").name;
-  return e(function(e) {
-    var t = e.references.macro,
-      r = e.babel.types;
-    (void 0 === t ? [] : t).forEach(function(e) {
-      var t = e.parent.arguments[0];
-      if (!t) throw "Styles map argument must be provided";
-      var i = e.findParent(function(e) {
+  function e(e) {
+    return (
+      (function(e) {
+        if (Array.isArray(e)) {
+          for (var n = 0, t = new Array(e.length); n < e.length; n++)
+            t[n] = e[n];
+          return t;
+        }
+      })(e) ||
+      (function(e) {
+        if (
+          Symbol.iterator in Object(e) ||
+          "[object Arguments]" === Object.prototype.toString.call(e)
+        )
+          return Array.from(e);
+      })(e) ||
+      (function() {
+        throw new TypeError("Invalid attempt to spread non-iterable instance");
+      })()
+    );
+  }
+  var n = require("babel-plugin-macros").createMacro,
+    t = require("../package.json").name;
+  return n(function(n) {
+    var r = n.references.macro,
+      i = n.babel.types;
+    (void 0 === r ? [] : r).forEach(function(n) {
+      var r = n.parent.arguments[0];
+      if (((r.name = "s"), console.log(r), !r))
+        throw "Styles map argument must be provided";
+      var a = n.findParent(function(e) {
         return e.isProgram();
       });
-      e.parentPath.remove();
-      var a = i.get("body").find(function(e) {
-          return r.isImportDeclaration(e);
+      n.parentPath.remove();
+      var o = a.get("body").find(function(e) {
+          return i.isImportDeclaration(e);
         }),
-        o = i.get("body").find(function(e) {
-          return !r.isImportDeclaration(e);
+        s = a.get("body").find(function(e) {
+          return !i.isImportDeclaration(e);
         }),
-        s = i.scope.generateUidIdentifier("getStyleName"),
-        u = i.scope.generateUidIdentifier("bindStyleNames"),
-        l = r.importDeclaration(
-          [r.importDefaultSpecifier(u)],
-          r.stringLiteral("".concat(n, "/dist/bindStyleName")),
+        u = a.scope.generateUidIdentifier("getStyleName"),
+        l = a.scope.generateUidIdentifier("bindStyleNames"),
+        f = i.importDeclaration(
+          [i.importDefaultSpecifier(l)],
+          i.stringLiteral("".concat(t, "/dist/bindStyleName")),
         ),
-        c = r.variableDeclaration("const", [
-          r.variableDeclarator(s, r.callExpression(u, [t])),
+        c = i.variableDeclaration("const", [
+          i.variableDeclarator(u, i.callExpression(l, [r])),
         ]);
-      a.insertBefore(l),
-        o.insertBefore(c),
-        i.traverse(
-          (function(e, n) {
+      o.insertBefore(f),
+        s.insertBefore(c),
+        a.traverse(
+          (function(n, t) {
             return {
-              JSXElement: function(t) {
-                if (t.node.openingElement.attributes.length) {
-                  var r = t.node.openingElement.attributes.find(function(e) {
+              JSXElement: function(r) {
+                if (r.node.openingElement.attributes.length) {
+                  var i = r.node.openingElement.attributes.find(function(e) {
                     return "styleName" === e.name.name;
                   });
-                  if (r) {
-                    !(function(e) {
-                      var n;
-                      e.node.openingElement.attributes =
-                        (function(e) {
-                          if (Array.isArray(e)) {
-                            for (
-                              var n = 0, t = new Array(e.length);
-                              n < e.length;
-                              n++
-                            )
-                              t[n] = e[n];
-                            return t;
-                          }
-                        })(
-                          (n = e.node.openingElement.attributes.filter(function(
-                            e,
-                          ) {
-                            return "styleName" !== e.name.name;
-                          })),
-                        ) ||
-                        (function(e) {
-                          if (
-                            Symbol.iterator in Object(e) ||
-                            "[object Arguments]" ===
-                              Object.prototype.toString.call(e)
-                          )
-                            return Array.from(e);
-                        })(n) ||
-                        (function() {
-                          throw new TypeError(
-                            "Invalid attempt to spread non-iterable instance",
-                          );
-                        })();
-                    })(t);
-                    var i = (function(e, n) {
-                        return e.isStringLiteral(n.value)
-                          ? n.value
-                          : n.value.expression;
-                      })(e, r),
-                      a = e.callExpression(n, [i]),
-                      o = (function(e) {
+                  if (i) {
+                    !(function(n) {
+                      n.node.openingElement.attributes = e(
+                        n.node.openingElement.attributes.filter(function(e) {
+                          return "styleName" !== e.name.name;
+                        }),
+                      );
+                    })(r);
+                    var a = (function(e, n) {
+                        if (e.isStringLiteral(n.value)) {
+                          if (!n.value.value) return;
+                          var t = n.value.value.split(" ").map(function(n) {
+                            return e.stringLiteral(n);
+                          });
+                          return t.length > 1
+                            ? e.arrayExpression(t)
+                            : t[0]
+                            ? t[0]
+                            : void 0;
+                        }
+                        return n.value.expression;
+                      })(n, i),
+                      o = n.callExpression(t, e([a].filter(Boolean))),
+                      s = (function(e) {
                         return e.node.openingElement.attributes.find(function(
                           e,
                         ) {
                           return "className" === e.name.name;
                         });
-                      })(t);
-                    if (o)
-                      e.isJSXExpressionContainer(o.value) &&
-                        (o.value = e.JSXExpressionContainer(
-                          e.binaryExpression("+", o.value.expression, a),
-                        )),
-                        e.isStringLiteral(o.value) &&
-                          (o.value = e.JSXExpressionContainer(
-                            e.binaryExpression("+", o.value, a),
+                      })(r);
+                    if (s)
+                      a &&
+                        (n.isJSXExpressionContainer(s.value) &&
+                          (s.value = n.JSXExpressionContainer(
+                            n.binaryExpression("+", s.value.expression, o),
                           )),
-                        (t.node.openingElement.attributes = [o]);
+                        n.isStringLiteral(s.value) &&
+                          (s.value = n.JSXExpressionContainer(
+                            n.binaryExpression("+", s.value, o),
+                          ))),
+                        (r.node.openingElement.attributes = [s]);
                     else {
-                      var s = (function(e, n) {
+                      var u = (function(e, n) {
                         return e.JSXAttribute(e.jsxIdentifier("className"), n);
-                      })(e, e.JSXExpressionContainer(a));
-                      t.node.openingElement.attributes = [s];
+                      })(n, n.JSXExpressionContainer(o));
+                      r.node.openingElement.attributes = [u];
                     }
                   }
                 }
               },
             };
-          })(r, s),
+          })(i, u),
         );
     });
   });

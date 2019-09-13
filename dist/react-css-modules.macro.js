@@ -1,109 +1,113 @@
-var e = require("babel-plugin-macros").createMacro,
-  n = require("../package.json").name,
-  t = e(function(e) {
-    var t = e.references.macro,
-      r = e.babel.types;
-    (void 0 === t ? [] : t).forEach(function(e) {
-      var t = e.parent.arguments[0];
-      if (!t) throw "Styles map argument must be provided";
-      var i = e.findParent(function(e) {
+function e(e) {
+  return (
+    (function(e) {
+      if (Array.isArray(e)) {
+        for (var n = 0, r = new Array(e.length); n < e.length; n++) r[n] = e[n];
+        return r;
+      }
+    })(e) ||
+    (function(e) {
+      if (
+        Symbol.iterator in Object(e) ||
+        "[object Arguments]" === Object.prototype.toString.call(e)
+      )
+        return Array.from(e);
+    })(e) ||
+    (function() {
+      throw new TypeError("Invalid attempt to spread non-iterable instance");
+    })()
+  );
+}
+var n = require("babel-plugin-macros").createMacro,
+  r = require("../package.json").name,
+  t = n(function(n) {
+    var t = n.references.macro,
+      i = n.babel.types;
+    (void 0 === t ? [] : t).forEach(function(n) {
+      var t = n.parent.arguments[0];
+      if (((t.name = "s"), console.log(t), !t))
+        throw "Styles map argument must be provided";
+      var a = n.findParent(function(e) {
         return e.isProgram();
       });
-      e.parentPath.remove();
-      var a = i.get("body").find(function(e) {
-          return r.isImportDeclaration(e);
+      n.parentPath.remove();
+      var o = a.get("body").find(function(e) {
+          return i.isImportDeclaration(e);
         }),
-        o = i.get("body").find(function(e) {
-          return !r.isImportDeclaration(e);
+        s = a.get("body").find(function(e) {
+          return !i.isImportDeclaration(e);
         }),
-        s = i.scope.generateUidIdentifier("getStyleName"),
-        u = i.scope.generateUidIdentifier("bindStyleNames"),
-        l = r.importDeclaration(
-          [r.importDefaultSpecifier(u)],
-          r.stringLiteral("".concat(n, "/dist/bindStyleName")),
+        l = a.scope.generateUidIdentifier("getStyleName"),
+        u = a.scope.generateUidIdentifier("bindStyleNames"),
+        c = i.importDeclaration(
+          [i.importDefaultSpecifier(u)],
+          i.stringLiteral("".concat(r, "/dist/bindStyleName")),
         ),
-        c = r.variableDeclaration("const", [
-          r.variableDeclarator(s, r.callExpression(u, [t])),
+        f = i.variableDeclaration("const", [
+          i.variableDeclarator(l, i.callExpression(u, [t])),
         ]);
-      a.insertBefore(l),
-        o.insertBefore(c),
-        i.traverse(
-          (function(e, n) {
+      o.insertBefore(c),
+        s.insertBefore(f),
+        a.traverse(
+          (function(n, r) {
             return {
               JSXElement: function(t) {
                 if (t.node.openingElement.attributes.length) {
-                  var r = t.node.openingElement.attributes.find(function(e) {
+                  var i = t.node.openingElement.attributes.find(function(e) {
                     return "styleName" === e.name.name;
                   });
-                  if (r) {
-                    !(function(e) {
-                      var n;
-                      e.node.openingElement.attributes =
-                        (function(e) {
-                          if (Array.isArray(e)) {
-                            for (
-                              var n = 0, t = new Array(e.length);
-                              n < e.length;
-                              n++
-                            )
-                              t[n] = e[n];
-                            return t;
-                          }
-                        })(
-                          (n = e.node.openingElement.attributes.filter(function(
-                            e,
-                          ) {
-                            return "styleName" !== e.name.name;
-                          })),
-                        ) ||
-                        (function(e) {
-                          if (
-                            Symbol.iterator in Object(e) ||
-                            "[object Arguments]" ===
-                              Object.prototype.toString.call(e)
-                          )
-                            return Array.from(e);
-                        })(n) ||
-                        (function() {
-                          throw new TypeError(
-                            "Invalid attempt to spread non-iterable instance",
-                          );
-                        })();
+                  if (i) {
+                    !(function(n) {
+                      n.node.openingElement.attributes = e(
+                        n.node.openingElement.attributes.filter(function(e) {
+                          return "styleName" !== e.name.name;
+                        }),
+                      );
                     })(t);
-                    var i = (function(e, n) {
-                        return e.isStringLiteral(n.value)
-                          ? n.value
-                          : n.value.expression;
-                      })(e, r),
-                      a = e.callExpression(n, [i]),
-                      o = (function(e) {
+                    var a = (function(e, n) {
+                        if (e.isStringLiteral(n.value)) {
+                          if (!n.value.value) return;
+                          var r = n.value.value.split(" ").map(function(n) {
+                            return e.stringLiteral(n);
+                          });
+                          return r.length > 1
+                            ? e.arrayExpression(r)
+                            : r[0]
+                            ? r[0]
+                            : void 0;
+                        }
+                        return n.value.expression;
+                      })(n, i),
+                      o = n.callExpression(r, e([a].filter(Boolean))),
+                      s = (function(e) {
                         return e.node.openingElement.attributes.find(function(
                           e,
                         ) {
                           return "className" === e.name.name;
                         });
                       })(t);
-                    if (o)
-                      e.isJSXExpressionContainer(o.value) &&
-                        (o.value = e.JSXExpressionContainer(
-                          e.binaryExpression("+", o.value.expression, a),
-                        )),
-                        e.isStringLiteral(o.value) &&
-                          (o.value = e.JSXExpressionContainer(
-                            e.binaryExpression("+", o.value, a),
+                    if (s)
+                      a &&
+                        (n.isJSXExpressionContainer(s.value) &&
+                          (s.value = n.JSXExpressionContainer(
+                            n.binaryExpression("+", s.value.expression, o),
                           )),
-                        (t.node.openingElement.attributes = [o]);
+                        n.isStringLiteral(s.value) &&
+                          (s.value = n.JSXExpressionContainer(
+                            n.binaryExpression("+", s.value, o),
+                          ))),
+                        (t.node.openingElement.attributes = [s]);
                     else {
-                      var s = (function(e, n) {
+                      var l = (function(e, n) {
                         return e.JSXAttribute(e.jsxIdentifier("className"), n);
-                      })(e, e.JSXExpressionContainer(a));
-                      t.node.openingElement.attributes = [s];
+                      })(n, n.JSXExpressionContainer(o));
+                      t.node.openingElement.attributes = [l];
                     }
                   }
                 }
               },
             };
-          })(r, s),
+          })(i, l),
         );
     });
   });
