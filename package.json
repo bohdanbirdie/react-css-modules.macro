@@ -28,7 +28,8 @@
     "precommit": "lint-staged"
   },
   "dependencies": {
-    "babel-plugin-macros": "^2.6.1"
+    "babel-plugin-macros": "^2.6.1",
+    "memoizee": "^0.4.14"
   },
   "devDependencies": {
     "@babel/core": "^7.6.0",

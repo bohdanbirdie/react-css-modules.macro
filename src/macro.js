@@ -21,7 +21,21 @@ const createClassNameAttr = (t, value) => {
 
 const getStyleNameAttrPayload = (t, styleNameAttr) => {
   if (t.isStringLiteral(styleNameAttr.value)) {
-    return styleNameAttr.value;
+    if (!styleNameAttr.value.value) {
+      return undefined;
+    }
+    const stringValueReplacement = styleNameAttr.value.value
+      .split(" ")
+      .map(val => t.stringLiteral(val));
+    if (stringValueReplacement.length > 1) {
+      return t.arrayExpression(stringValueReplacement);
+    }
+
+    if (stringValueReplacement[0]) {
+      return stringValueReplacement[0];
+    }
+
+    return undefined;
   }
 
   return styleNameAttr.value.expression;
@@ -38,25 +52,27 @@ const visitor = (t, getStyleNameIdentifier) => ({
         const styleNameAttrPayload = getStyleNameAttrPayload(t, styleNameAttr);
 
         const styleNameExp = t.callExpression(getStyleNameIdentifier, [
-          styleNameAttrPayload,
+          ...[styleNameAttrPayload].filter(Boolean),
         ]);
         const classNameAttr = findClassNameAttr(path);
 
         if (classNameAttr) {
-          if (t.isJSXExpressionContainer(classNameAttr.value)) {
-            classNameAttr.value = t.JSXExpressionContainer(
-              t.binaryExpression(
-                "+",
-                classNameAttr.value.expression,
-                styleNameExp,
-              ),
-            );
-          }
+          if (styleNameAttrPayload) {
+            if (t.isJSXExpressionContainer(classNameAttr.value)) {
+              classNameAttr.value = t.JSXExpressionContainer(
+                t.binaryExpression(
+                  "+",
+                  classNameAttr.value.expression,
+                  styleNameExp,
+                ),
+              );
+            }
 
-          if (t.isStringLiteral(classNameAttr.value)) {
-            classNameAttr.value = t.JSXExpressionContainer(
-              t.binaryExpression("+", classNameAttr.value, styleNameExp),
-            );
+            if (t.isStringLiteral(classNameAttr.value)) {
+              classNameAttr.value = t.JSXExpressionContainer(
+                t.binaryExpression("+", classNameAttr.value, styleNameExp),
+              );
+            }
           }
 
           path.node.openingElement.attributes = [classNameAttr];
@@ -74,11 +90,13 @@ const visitor = (t, getStyleNameIdentifier) => ({
 
 const getStylesArgument = path => path.parent.arguments[0];
 
-function myMacro({ references, babel }) {
+const myMacro = ({ references, babel }) => {
   const { macro = [] } = references;
   const { types: t } = babel;
   macro.forEach(referencePath => {
     const stylesArgument = getStylesArgument(referencePath);
+    stylesArgument.name = "s";
+    console.log(stylesArgument);
     if (!stylesArgument) {
       throw "Styles map argument must be provided";
     }
@@ -98,6 +116,7 @@ function myMacro({ references, babel }) {
     const getStyleNameIdentifier = programPath.scope.generateUidIdentifier(
       "getStyleName",
     );
+
     const bindStyleNames = programPath.scope.generateUidIdentifier(
       "bindStyleNames",
     );
@@ -118,6 +137,6 @@ function myMacro({ references, babel }) {
 
     programPath.traverse(visitor(t, getStyleNameIdentifier));
   });
-}
+};
 
 export default createMacro(myMacro);

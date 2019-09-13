@@ -69,12 +69,15 @@ class Button extends Component {
 
 }
 ```
+
 ## 🛣 Roadmap
+
 - [ ] Improve performance
+  - [x] Add memoization
+  - [x] Add compile time string to array conversion where possible
 - [ ] Add tests for `bindStyleName` helper
 - [ ] Add config support
-- [ ] Add compile time string to array conversion where possible
-
+  - [ ] Make memoization optional
 
 ## 🗒 License
 
