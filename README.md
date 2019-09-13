@@ -73,6 +73,7 @@ class Button extends Component {
 - [ ] Improve performance
 - [ ] Add tests for `bindStyleName` helper
 - [ ] Add config support
+- [ ] Add compile time string to array conversion where possible
 
 
 ## 🗒 License
