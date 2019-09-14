@@ -1,6 +1,10 @@
 const { createMacro } = require("babel-plugin-macros");
 const { name } = require("../package.json");
 
+const defaultConfig = {
+  enableMemo: true,
+};
+
 const removeStyleNameAttr = path => {
   path.node.openingElement.attributes = [
     ...path.node.openingElement.attributes.filter(
@@ -90,13 +94,15 @@ const visitor = (t, getStyleNameIdentifier) => ({
 
 const getStylesArgument = path => path.parent.arguments[0];
 
-const myMacro = ({ references, babel }) => {
+const myMacro = ({ references, babel, config }) => {
+  console.log("config", config);
+  const marcoConfig = { ...defaultConfig, ...config };
   const { macro = [] } = references;
   const { types: t } = babel;
   macro.forEach(referencePath => {
     const stylesArgument = getStylesArgument(referencePath);
-    stylesArgument.name = "s";
-    console.log(stylesArgument);
+    // stylesArgument.name = "s";
+    // console.log(stylesArgument);
     if (!stylesArgument) {
       throw "Styles map argument must be provided";
     }
@@ -120,9 +126,13 @@ const myMacro = ({ references, babel }) => {
     const bindStyleNames = programPath.scope.generateUidIdentifier(
       "bindStyleNames",
     );
+
+    const bindImplementation = marcoConfig.enableMemo
+      ? `${name}/dist/bindStyleNameMemo`
+      : `${name}/dist/bindStyleNamePure`;
     const helperImportDeclaration = t.importDeclaration(
       [t.importDefaultSpecifier(bindStyleNames)],
-      t.stringLiteral(`${name}/dist/bindStyleName`),
+      t.stringLiteral(bindImplementation),
     );
 
     const bindedStylesDeclaration = t.variableDeclaration("const", [
@@ -138,5 +148,5 @@ const myMacro = ({ references, babel }) => {
     programPath.traverse(visitor(t, getStyleNameIdentifier));
   });
 };
-
-export default createMacro(myMacro);
+// TODO: fix issue with config that could not be find
+export default createMacro(myMacro, { configName: "reactCssModulesMacro" });

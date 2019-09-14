@@ -1,11 +1,8 @@
-// TODO: memo should be optional
-import memoizee from "memoizee";
-
 const getClassNames = (input, stylesMap) =>
   input.map(name => stylesMap[name] || name).join(" ");
 
-const bindStyleName = stylesMap => {
-  return memoizee(
+const bindStyleName = memoWrapper => stylesMap => {
+  return memoWrapper(
     styleNames => {
       if (styleNames) {
         if (Array.isArray(styleNames)) {

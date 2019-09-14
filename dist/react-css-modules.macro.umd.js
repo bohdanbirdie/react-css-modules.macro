@@ -5,13 +5,38 @@
     ? define(n)
     : (e.reactCssModulesMacro = n());
 })(this, function() {
-  function e(e) {
+  function e(e, n, r) {
+    return (
+      n in e
+        ? Object.defineProperty(e, n, {
+            value: r,
+            enumerable: !0,
+            configurable: !0,
+            writable: !0,
+          })
+        : (e[n] = r),
+      e
+    );
+  }
+  function n(e, n) {
+    var r = Object.keys(e);
+    if (Object.getOwnPropertySymbols) {
+      var t = Object.getOwnPropertySymbols(e);
+      n &&
+        (t = t.filter(function(n) {
+          return Object.getOwnPropertyDescriptor(e, n).enumerable;
+        })),
+        r.push.apply(r, t);
+    }
+    return r;
+  }
+  function r(e) {
     return (
       (function(e) {
         if (Array.isArray(e)) {
-          for (var n = 0, t = new Array(e.length); n < e.length; n++)
-            t[n] = e[n];
-          return t;
+          for (var n = 0, r = new Array(e.length); n < e.length; n++)
+            r[n] = e[n];
+          return r;
         }
       })(e) ||
       (function(e) {
@@ -26,98 +51,133 @@
       })()
     );
   }
-  var n = require("babel-plugin-macros").createMacro,
-    t = require("../package.json").name;
-  return n(function(n) {
-    var r = n.references.macro,
-      i = n.babel.types;
-    (void 0 === r ? [] : r).forEach(function(n) {
-      var r = n.parent.arguments[0];
-      if (((r.name = "s"), console.log(r), !r))
-        throw "Styles map argument must be provided";
-      var a = n.findParent(function(e) {
-        return e.isProgram();
-      });
-      n.parentPath.remove();
-      var o = a.get("body").find(function(e) {
-          return i.isImportDeclaration(e);
-        }),
-        s = a.get("body").find(function(e) {
-          return !i.isImportDeclaration(e);
-        }),
-        u = a.scope.generateUidIdentifier("getStyleName"),
-        l = a.scope.generateUidIdentifier("bindStyleNames"),
-        f = i.importDeclaration(
-          [i.importDefaultSpecifier(l)],
-          i.stringLiteral("".concat(t, "/dist/bindStyleName")),
-        ),
-        c = i.variableDeclaration("const", [
-          i.variableDeclarator(u, i.callExpression(l, [r])),
-        ]);
-      o.insertBefore(f),
-        s.insertBefore(c),
-        a.traverse(
-          (function(n, t) {
-            return {
-              JSXElement: function(r) {
-                if (r.node.openingElement.attributes.length) {
-                  var i = r.node.openingElement.attributes.find(function(e) {
-                    return "styleName" === e.name.name;
-                  });
-                  if (i) {
-                    !(function(n) {
-                      n.node.openingElement.attributes = e(
-                        n.node.openingElement.attributes.filter(function(e) {
-                          return "styleName" !== e.name.name;
-                        }),
-                      );
-                    })(r);
-                    var a = (function(e, n) {
-                        if (e.isStringLiteral(n.value)) {
-                          if (!n.value.value) return;
-                          var t = n.value.value.split(" ").map(function(n) {
-                            return e.stringLiteral(n);
+  var t = require("babel-plugin-macros").createMacro,
+    i = require("../package.json").name,
+    o = { enableMemo: !0 };
+  return t(
+    function(t) {
+      var a = t.references,
+        u = t.babel,
+        s = t.config;
+      console.log("config", s);
+      var l = (function(r) {
+          for (var t = 1; t < arguments.length; t++) {
+            var i = null != arguments[t] ? arguments[t] : {};
+            t % 2
+              ? n(i, !0).forEach(function(n) {
+                  e(r, n, i[n]);
+                })
+              : Object.getOwnPropertyDescriptors
+              ? Object.defineProperties(r, Object.getOwnPropertyDescriptors(i))
+              : n(i).forEach(function(e) {
+                  Object.defineProperty(
+                    r,
+                    e,
+                    Object.getOwnPropertyDescriptor(i, e),
+                  );
+                });
+          }
+          return r;
+        })({}, o, {}, s),
+        c = a.macro,
+        f = u.types;
+      (void 0 === c ? [] : c).forEach(function(e) {
+        var n = e.parent.arguments[0];
+        if (!n) throw "Styles map argument must be provided";
+        var t = e.findParent(function(e) {
+          return e.isProgram();
+        });
+        e.parentPath.remove();
+        var o = t.get("body").find(function(e) {
+            return f.isImportDeclaration(e);
+          }),
+          a = t.get("body").find(function(e) {
+            return !f.isImportDeclaration(e);
+          }),
+          u = t.scope.generateUidIdentifier("getStyleName"),
+          s = t.scope.generateUidIdentifier("bindStyleNames"),
+          c = "".concat(
+            i,
+            l.enableMemo
+              ? "/dist/bindStyleNameMemo"
+              : "/dist/bindStyleNamePure",
+          ),
+          p = f.importDeclaration(
+            [f.importDefaultSpecifier(s)],
+            f.stringLiteral(c),
+          ),
+          m = f.variableDeclaration("const", [
+            f.variableDeclarator(u, f.callExpression(s, [n])),
+          ]);
+        o.insertBefore(p),
+          a.insertBefore(m),
+          t.traverse(
+            (function(e, n) {
+              return {
+                JSXElement: function(t) {
+                  if (t.node.openingElement.attributes.length) {
+                    var i = t.node.openingElement.attributes.find(function(e) {
+                      return "styleName" === e.name.name;
+                    });
+                    if (i) {
+                      !(function(e) {
+                        e.node.openingElement.attributes = r(
+                          e.node.openingElement.attributes.filter(function(e) {
+                            return "styleName" !== e.name.name;
+                          }),
+                        );
+                      })(t);
+                      var o = (function(e, n) {
+                          if (e.isStringLiteral(n.value)) {
+                            if (!n.value.value) return;
+                            var r = n.value.value.split(" ").map(function(n) {
+                              return e.stringLiteral(n);
+                            });
+                            return r.length > 1
+                              ? e.arrayExpression(r)
+                              : r[0]
+                              ? r[0]
+                              : void 0;
+                          }
+                          return n.value.expression;
+                        })(e, i),
+                        a = e.callExpression(n, r([o].filter(Boolean))),
+                        u = (function(e) {
+                          return e.node.openingElement.attributes.find(function(
+                            e,
+                          ) {
+                            return "className" === e.name.name;
                           });
-                          return t.length > 1
-                            ? e.arrayExpression(t)
-                            : t[0]
-                            ? t[0]
-                            : void 0;
-                        }
-                        return n.value.expression;
-                      })(n, i),
-                      o = n.callExpression(t, e([a].filter(Boolean))),
-                      s = (function(e) {
-                        return e.node.openingElement.attributes.find(function(
-                          e,
-                        ) {
-                          return "className" === e.name.name;
-                        });
-                      })(r);
-                    if (s)
-                      a &&
-                        (n.isJSXExpressionContainer(s.value) &&
-                          (s.value = n.JSXExpressionContainer(
-                            n.binaryExpression("+", s.value.expression, o),
-                          )),
-                        n.isStringLiteral(s.value) &&
-                          (s.value = n.JSXExpressionContainer(
-                            n.binaryExpression("+", s.value, o),
-                          ))),
-                        (r.node.openingElement.attributes = [s]);
-                    else {
-                      var u = (function(e, n) {
-                        return e.JSXAttribute(e.jsxIdentifier("className"), n);
-                      })(n, n.JSXExpressionContainer(o));
-                      r.node.openingElement.attributes = [u];
+                        })(t);
+                      if (u)
+                        o &&
+                          (e.isJSXExpressionContainer(u.value) &&
+                            (u.value = e.JSXExpressionContainer(
+                              e.binaryExpression("+", u.value.expression, a),
+                            )),
+                          e.isStringLiteral(u.value) &&
+                            (u.value = e.JSXExpressionContainer(
+                              e.binaryExpression("+", u.value, a),
+                            ))),
+                          (t.node.openingElement.attributes = [u]);
+                      else {
+                        var s = (function(e, n) {
+                          return e.JSXAttribute(
+                            e.jsxIdentifier("className"),
+                            n,
+                          );
+                        })(e, e.JSXExpressionContainer(a));
+                        t.node.openingElement.attributes = [s];
+                      }
                     }
                   }
-                }
-              },
-            };
-          })(i, u),
-        );
-    });
-  });
+                },
+              };
+            })(f, u),
+          );
+      });
+    },
+    { configName: "reactCssModulesMacro" },
+  );
 });
 //# sourceMappingURL=react-css-modules.macro.umd.js.map
