@@ -24,7 +24,7 @@
     "test": "jest --coverage",
     "format": "prettier --write",
     "prepare": "npm run build",
-    "build": "microbundle -o dist src/{index,bindStyleName}.js",
+    "build": "microbundle -o dist src/{index,bindStyleNameMemo,bindStyleNamePure}.js",
     "precommit": "lint-staged"
   },
   "dependencies": {
