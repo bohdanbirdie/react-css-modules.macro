@@ -1,8 +1,10 @@
 const { createMacro } = require("babel-plugin-macros");
 const { name } = require("../package.json");
+
 const defaultConfig = {
   enableMemo: true,
   targetTag: "styleName",
+  warning: false,
 };
 
 const removeStyleNameAttr = (path, config) => {
@@ -82,9 +84,7 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
           path.node.openingElement.attributes = [
             classNameAttr,
             ...path.node.openingElement.attributes.filter(
-              node =>
-                node.name.name !== "className" &&
-                node.name.name !== config.targettag,
+              node => node.name.name !== "className",
             ),
           ];
         } else {
@@ -94,11 +94,9 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
           );
 
           path.node.openingElement.attributes = [
-            classNameAttr,
+            newClassNameAttr,
             ...path.node.openingElement.attributes.filter(
-              node =>
-                node.name.name !== "className" &&
-                node.name.name !== config.targettag,
+              node => node.name.name !== "className",
             ),
           ];
         }
@@ -151,7 +149,12 @@ const myMacro = ({ references, babel, config }) => {
     const bindedStylesDeclaration = t.variableDeclaration("const", [
       t.variableDeclarator(
         getStyleNameIdentifier,
-        t.callExpression(bindStyleNames, [stylesArgument]),
+        t.callExpression(bindStyleNames, [
+          stylesArgument,
+          marcoConfig.warning
+            ? t.booleanLiteral(true)
+            : t.booleanLiteral(false),
+        ]),
       ),
     ]);
 

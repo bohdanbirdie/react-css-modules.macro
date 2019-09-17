@@ -1,21 +1,40 @@
-const getClassNames = (input, stylesMap) =>
-  input.map(name => stylesMap[name] || name).join(" ");
+const getClassNames = (input, stylesMap, warningEnabled) => {
+  if (warningEnabled) {
+    input
+      .map(name => {
+        if (stylesMap[name]) {
+          return stylesMap[name];
+        }
 
-const bindStyleName = memoWrapper => stylesMap => {
+        console.warn(`${name} key is missing in provided styles map`);
+
+        return name;
+      })
+      .join(" ");
+  }
+
+  return input.map(name => stylesMap[name] || name).join(" ");
+};
+
+const bindStyleName = memoWrapper => (stylesMap, warningEnabled) => {
   return memoWrapper(
     styleNames => {
       if (styleNames) {
         if (Array.isArray(styleNames)) {
-          return ` ${getClassNames(styleNames, stylesMap)}`;
+          return ` ${getClassNames(styleNames, stylesMap, warningEnabled)}`;
         }
 
         if (typeof styleNames === "string") {
-          return ` ${getClassNames(styleNames.split(" "), stylesMap)}`;
+          return ` ${getClassNames(
+            styleNames.split(" "),
+            stylesMap,
+            warningEnabled,
+          )}`;
         }
 
         if (typeof styleNames === "object") {
           const keys = Object.keys(styleNames).filter(key => styleNames[key]);
-          return ` ${getClassNames(keys, stylesMap)}`;
+          return ` ${getClassNames(keys, stylesMap, warningEnabled)}`;
         }
       }
       return "";

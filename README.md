@@ -6,7 +6,7 @@ Inspired by [babel-plugin-react-css-modules](https://github.com/gajus/babel-plug
 
 ## 🙌 Motivation
 
-With support of CSS Loader - CSS modules became a common use case, especially in [Create React App](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
+With the support of CSS Loader - CSS modules became a common use case, especially in [Create React App](https://create-react-app.dev/docs/adding-a-css-modules-stylesheet).
 One of the downsides is that you are forced to access styles map via object keys which is not so handy.
 
 ```JavaScript
@@ -24,7 +24,7 @@ class Button extends Component {
 
 One of the solutions is using the [babel-plugin-react-css-modules](https://github.com/gajus/babel-plugin-react-css-modules) but you either need to eject or rewire.
 
-Since CRA support [babel-plugin-macros](https://github.com/kentcdodds/babel-plugin-macros) - we can take andatage of that and still have `styleName` attribute be mapped to imported css modules.
+Since CRA support [babel-plugin-macros](https://github.com/kentcdodds/babel-plugin-macros) - we can take advantage of that and still have `styleName` attribute be mapped to imported CSS modules.
 
 ## 📦 Usage
 
@@ -70,14 +70,32 @@ class Button extends Component {
 }
 ```
 
+## ⚙️ Config
+
+[babel-plugin-macros support](https://github.com/kentcdodds/babel-plugin-macros/blob/master/other/docs/user.md) a configuration for every separate macro in your project.
+The easiest way to specify it is to add a section to the `package.json`
+
+```JSON
+"babelMacros": {
+    "reactCssModulesMacro": { "option": "value" }
+  },
+```
+
+| Option     | Type    | Default value |
+| :--------- | :------ | ------------- |
+| enableMemo | boolean | true          |
+| targetTag  | string  | "styleName"   |
+| warning    | boolean | false         |
+
 ## 🛣 Roadmap
 
 - [ ] Improve performance
   - [x] Add memoization
   - [x] Add compile time string to array conversion where possible
 - [ ] Add tests for `bindStyleName` helper
-- [ ] Add config support
-  - [ ] Make memoization optional
+- [x] Add config support
+  - [x] Make memoization optional
+  - [x] Make warning optional
 
 ## 🗒 License
 
