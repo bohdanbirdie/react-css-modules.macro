@@ -1,14 +1,14 @@
 const { createMacro } = require("babel-plugin-macros");
 const { name } = require("../package.json");
-
 const defaultConfig = {
   enableMemo: true,
+  targetTag: "styleName",
 };
 
-const removeStyleNameAttr = path => {
+const removeStyleNameAttr = (path, config) => {
   path.node.openingElement.attributes = [
     ...path.node.openingElement.attributes.filter(
-      attr => attr.name.name !== "styleName",
+      attr => attr.name.name !== config.targetTag,
     ),
   ];
 };
@@ -45,14 +45,14 @@ const getStyleNameAttrPayload = (t, styleNameAttr) => {
   return styleNameAttr.value.expression;
 };
 
-const visitor = (t, getStyleNameIdentifier) => ({
+const visitor = (t, getStyleNameIdentifier, config) => ({
   JSXElement(path) {
     if (path.node.openingElement.attributes.length) {
       const styleNameAttr = path.node.openingElement.attributes.find(
-        attr => attr.name.name === "styleName",
+        attr => attr.name.name === config.targetTag,
       );
       if (styleNameAttr) {
-        removeStyleNameAttr(path);
+        removeStyleNameAttr(path, config);
         const styleNameAttrPayload = getStyleNameAttrPayload(t, styleNameAttr);
 
         const styleNameExp = t.callExpression(getStyleNameIdentifier, [
@@ -79,13 +79,28 @@ const visitor = (t, getStyleNameIdentifier) => ({
             }
           }
 
-          path.node.openingElement.attributes = [classNameAttr];
+          path.node.openingElement.attributes = [
+            classNameAttr,
+            ...path.node.openingElement.attributes.filter(
+              node =>
+                node.name.name !== "className" &&
+                node.name.name !== config.targettag,
+            ),
+          ];
         } else {
           const newClassNameAttr = createClassNameAttr(
             t,
             t.JSXExpressionContainer(styleNameExp),
           );
-          path.node.openingElement.attributes = [newClassNameAttr];
+
+          path.node.openingElement.attributes = [
+            classNameAttr,
+            ...path.node.openingElement.attributes.filter(
+              node =>
+                node.name.name !== "className" &&
+                node.name.name !== config.targettag,
+            ),
+          ];
         }
       }
     }
@@ -95,14 +110,12 @@ const visitor = (t, getStyleNameIdentifier) => ({
 const getStylesArgument = path => path.parent.arguments[0];
 
 const myMacro = ({ references, babel, config }) => {
-  console.log("config", config);
   const marcoConfig = { ...defaultConfig, ...config };
   const { macro = [] } = references;
   const { types: t } = babel;
   macro.forEach(referencePath => {
     const stylesArgument = getStylesArgument(referencePath);
-    // stylesArgument.name = "s";
-    // console.log(stylesArgument);
+
     if (!stylesArgument) {
       throw "Styles map argument must be provided";
     }
@@ -145,8 +158,8 @@ const myMacro = ({ references, babel, config }) => {
     firstImportDeclarationNode.insertBefore(helperImportDeclaration);
     firstNonImportDeclarationNode.insertBefore(bindedStylesDeclaration);
 
-    programPath.traverse(visitor(t, getStyleNameIdentifier));
+    programPath.traverse(visitor(t, getStyleNameIdentifier, marcoConfig));
   });
 };
-// TODO: fix issue with config that could not be find
+
 export default createMacro(myMacro, { configName: "reactCssModulesMacro" });
