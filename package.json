@@ -46,7 +46,7 @@
     "testRegex": "__tests__/.*.test.js$"
   },
   "lint-staged": {
-    "*.{js,md}": [
+    "src/*.{js,md}": [
       "prettier --write",
       "git add -A"
     ]
