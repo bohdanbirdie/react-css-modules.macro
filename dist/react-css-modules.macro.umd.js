@@ -5,38 +5,38 @@
     ? define(n)
     : (e.reactCssModulesMacro = n());
 })(this, function() {
-  function e(e, n, r) {
+  function e(e, n, t) {
     return (
       n in e
         ? Object.defineProperty(e, n, {
-            value: r,
+            value: t,
             enumerable: !0,
             configurable: !0,
             writable: !0,
           })
-        : (e[n] = r),
+        : (e[n] = t),
       e
     );
   }
   function n(e, n) {
-    var r = Object.keys(e);
+    var t = Object.keys(e);
     if (Object.getOwnPropertySymbols) {
-      var t = Object.getOwnPropertySymbols(e);
+      var r = Object.getOwnPropertySymbols(e);
       n &&
-        (t = t.filter(function(n) {
+        (r = r.filter(function(n) {
           return Object.getOwnPropertyDescriptor(e, n).enumerable;
         })),
-        r.push.apply(r, t);
+        t.push.apply(t, r);
     }
-    return r;
+    return t;
   }
-  function r(e) {
+  function t(e) {
     return (
       (function(e) {
         if (Array.isArray(e)) {
-          for (var n = 0, r = new Array(e.length); n < e.length; n++)
-            r[n] = e[n];
-          return r;
+          for (var n = 0, t = new Array(e.length); n < e.length; n++)
+            t[n] = e[n];
+          return t;
         }
       })(e) ||
       (function(e) {
@@ -51,129 +51,146 @@
       })()
     );
   }
-  var t = require("babel-plugin-macros").createMacro,
+  var r = require("babel-plugin-macros").createMacro,
     i = require("../package.json").name,
-    o = { enableMemo: !0 };
-  return t(
-    function(t) {
-      var a = t.references,
-        u = t.babel,
-        s = t.config;
-      console.log("config", s);
-      var l = (function(r) {
-          for (var t = 1; t < arguments.length; t++) {
-            var i = null != arguments[t] ? arguments[t] : {};
-            t % 2
+    a = { enableMemo: !0, targetTag: "styleName", warning: !1 };
+  return r(
+    function(r) {
+      var o = r.references,
+        u = r.babel,
+        s = (function(t) {
+          for (var r = 1; r < arguments.length; r++) {
+            var i = null != arguments[r] ? arguments[r] : {};
+            r % 2
               ? n(i, !0).forEach(function(n) {
-                  e(r, n, i[n]);
+                  e(t, n, i[n]);
                 })
               : Object.getOwnPropertyDescriptors
-              ? Object.defineProperties(r, Object.getOwnPropertyDescriptors(i))
+              ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(i))
               : n(i).forEach(function(e) {
                   Object.defineProperty(
-                    r,
+                    t,
                     e,
                     Object.getOwnPropertyDescriptor(i, e),
                   );
                 });
           }
-          return r;
-        })({}, o, {}, s),
-        c = a.macro,
-        f = u.types;
+          return t;
+        })({}, a, {}, r.config),
+        c = o.macro,
+        l = u.types;
       (void 0 === c ? [] : c).forEach(function(e) {
         var n = e.parent.arguments[0];
         if (!n) throw "Styles map argument must be provided";
-        var t = e.findParent(function(e) {
+        var r = e.findParent(function(e) {
           return e.isProgram();
         });
         e.parentPath.remove();
-        var o = t.get("body").find(function(e) {
-            return f.isImportDeclaration(e);
+        var a = r.get("body").find(function(e) {
+            return l.isImportDeclaration(e);
           }),
-          a = t.get("body").find(function(e) {
-            return !f.isImportDeclaration(e);
+          o = r.get("body").find(function(e) {
+            return !l.isImportDeclaration(e);
           }),
-          u = t.scope.generateUidIdentifier("getStyleName"),
-          s = t.scope.generateUidIdentifier("bindStyleNames"),
-          c = "".concat(
+          u = r.scope.generateUidIdentifier("getStyleName"),
+          c = r.scope.generateUidIdentifier("bindStyleNames"),
+          f = "".concat(
             i,
-            l.enableMemo
+            s.enableMemo
               ? "/dist/bindStyleNameMemo"
               : "/dist/bindStyleNamePure",
           ),
-          p = f.importDeclaration(
-            [f.importDefaultSpecifier(s)],
-            f.stringLiteral(c),
+          p = l.importDeclaration(
+            [l.importDefaultSpecifier(c)],
+            l.stringLiteral(f),
           ),
-          m = f.variableDeclaration("const", [
-            f.variableDeclarator(u, f.callExpression(s, [n])),
+          m = l.variableDeclaration("const", [
+            l.variableDeclarator(
+              u,
+              l.callExpression(c, [n, l.booleanLiteral(!!s.warning)]),
+            ),
           ]);
-        o.insertBefore(p),
-          a.insertBefore(m),
-          t.traverse(
-            (function(e, n) {
+        a.insertBefore(p),
+          o.insertBefore(m),
+          r.traverse(
+            (function(e, n, r) {
               return {
-                JSXElement: function(t) {
-                  if (t.node.openingElement.attributes.length) {
-                    var i = t.node.openingElement.attributes.find(function(e) {
-                      return "styleName" === e.name.name;
+                JSXElement: function(i) {
+                  if (i.node.openingElement.attributes.length) {
+                    var a = i.node.openingElement.attributes.find(function(e) {
+                      return e.name.name === r.targetTag;
                     });
-                    if (i) {
-                      !(function(e) {
-                        e.node.openingElement.attributes = r(
+                    if (a) {
+                      !(function(e, n) {
+                        e.node.openingElement.attributes = t(
                           e.node.openingElement.attributes.filter(function(e) {
-                            return "styleName" !== e.name.name;
+                            return e.name.name !== n.targetTag;
                           }),
                         );
-                      })(t);
+                      })(i, r);
                       var o = (function(e, n) {
                           if (e.isStringLiteral(n.value)) {
                             if (!n.value.value) return;
-                            var r = n.value.value.split(" ").map(function(n) {
+                            var t = n.value.value.split(" ").map(function(n) {
                               return e.stringLiteral(n);
                             });
-                            return r.length > 1
-                              ? e.arrayExpression(r)
-                              : r[0]
-                              ? r[0]
+                            return t.length > 1
+                              ? e.arrayExpression(t)
+                              : t[0]
+                              ? t[0]
                               : void 0;
                           }
                           return n.value.expression;
-                        })(e, i),
-                        a = e.callExpression(n, r([o].filter(Boolean))),
-                        u = (function(e) {
+                        })(e, a),
+                        u = e.callExpression(n, t([o].filter(Boolean))),
+                        s = (function(e) {
                           return e.node.openingElement.attributes.find(function(
                             e,
                           ) {
                             return "className" === e.name.name;
                           });
-                        })(t);
-                      if (u)
+                        })(i);
+                      if (s)
                         o &&
-                          (e.isJSXExpressionContainer(u.value) &&
-                            (u.value = e.JSXExpressionContainer(
-                              e.binaryExpression("+", u.value.expression, a),
+                          (e.isJSXExpressionContainer(s.value) &&
+                            (s.value = e.JSXExpressionContainer(
+                              e.binaryExpression("+", s.value.expression, u),
                             )),
-                          e.isStringLiteral(u.value) &&
-                            (u.value = e.JSXExpressionContainer(
-                              e.binaryExpression("+", u.value, a),
+                          e.isStringLiteral(s.value) &&
+                            (s.value = e.JSXExpressionContainer(
+                              e.binaryExpression("+", s.value, u),
                             ))),
-                          (t.node.openingElement.attributes = [u]);
+                          (i.node.openingElement.attributes = [s].concat(
+                            t(
+                              i.node.openingElement.attributes.filter(function(
+                                e,
+                              ) {
+                                return "className" !== e.name.name;
+                              }),
+                            ),
+                          ));
                       else {
-                        var s = (function(e, n) {
+                        var c = (function(e, n) {
                           return e.JSXAttribute(
                             e.jsxIdentifier("className"),
                             n,
                           );
-                        })(e, e.JSXExpressionContainer(a));
-                        t.node.openingElement.attributes = [s];
+                        })(e, e.JSXExpressionContainer(u));
+                        i.node.openingElement.attributes = [c].concat(
+                          t(
+                            i.node.openingElement.attributes.filter(function(
+                              e,
+                            ) {
+                              return "className" !== e.name.name;
+                            }),
+                          ),
+                        );
                       }
                     }
                   }
                 },
               };
-            })(f, u),
+            })(l, u, s),
           );
       });
     },

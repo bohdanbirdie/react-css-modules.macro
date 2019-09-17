@@ -1,34 +1,34 @@
-function e(e, n, r) {
+function e(e, n, t) {
   return (
     n in e
       ? Object.defineProperty(e, n, {
-          value: r,
+          value: t,
           enumerable: !0,
           configurable: !0,
           writable: !0,
         })
-      : (e[n] = r),
+      : (e[n] = t),
     e
   );
 }
 function n(e, n) {
-  var r = Object.keys(e);
+  var t = Object.keys(e);
   if (Object.getOwnPropertySymbols) {
-    var t = Object.getOwnPropertySymbols(e);
+    var r = Object.getOwnPropertySymbols(e);
     n &&
-      (t = t.filter(function(n) {
+      (r = r.filter(function(n) {
         return Object.getOwnPropertyDescriptor(e, n).enumerable;
       })),
-      r.push.apply(r, t);
+      t.push.apply(t, r);
   }
-  return r;
+  return t;
 }
-function r(e) {
+function t(e) {
   return (
     (function(e) {
       if (Array.isArray(e)) {
-        for (var n = 0, r = new Array(e.length); n < e.length; n++) r[n] = e[n];
-        return r;
+        for (var n = 0, t = new Array(e.length); n < e.length; n++) t[n] = e[n];
+        return t;
       }
     })(e) ||
     (function(e) {
@@ -43,133 +43,150 @@ function r(e) {
     })()
   );
 }
-var t = require("babel-plugin-macros").createMacro,
+var r = require("babel-plugin-macros").createMacro,
   i = require("../package.json").name,
-  o = { enableMemo: !0 },
-  a = t(
-    function(t) {
-      var a = t.references,
-        s = t.babel,
-        u = t.config;
-      console.log("config", u);
-      var l = (function(r) {
-          for (var t = 1; t < arguments.length; t++) {
-            var i = null != arguments[t] ? arguments[t] : {};
-            t % 2
+  a = { enableMemo: !0, targetTag: "styleName", warning: !1 },
+  o = r(
+    function(r) {
+      var o = r.references,
+        u = r.babel,
+        s = (function(t) {
+          for (var r = 1; r < arguments.length; r++) {
+            var i = null != arguments[r] ? arguments[r] : {};
+            r % 2
               ? n(i, !0).forEach(function(n) {
-                  e(r, n, i[n]);
+                  e(t, n, i[n]);
                 })
               : Object.getOwnPropertyDescriptors
-              ? Object.defineProperties(r, Object.getOwnPropertyDescriptors(i))
+              ? Object.defineProperties(t, Object.getOwnPropertyDescriptors(i))
               : n(i).forEach(function(e) {
                   Object.defineProperty(
-                    r,
+                    t,
                     e,
                     Object.getOwnPropertyDescriptor(i, e),
                   );
                 });
           }
-          return r;
-        })({}, o, {}, u),
-        c = a.macro,
-        f = s.types;
-      (void 0 === c ? [] : c).forEach(function(e) {
+          return t;
+        })({}, a, {}, r.config),
+        l = o.macro,
+        c = u.types;
+      (void 0 === l ? [] : l).forEach(function(e) {
         var n = e.parent.arguments[0];
         if (!n) throw "Styles map argument must be provided";
-        var t = e.findParent(function(e) {
+        var r = e.findParent(function(e) {
           return e.isProgram();
         });
         e.parentPath.remove();
-        var o = t.get("body").find(function(e) {
-            return f.isImportDeclaration(e);
+        var a = r.get("body").find(function(e) {
+            return c.isImportDeclaration(e);
           }),
-          a = t.get("body").find(function(e) {
-            return !f.isImportDeclaration(e);
+          o = r.get("body").find(function(e) {
+            return !c.isImportDeclaration(e);
           }),
-          s = t.scope.generateUidIdentifier("getStyleName"),
-          u = t.scope.generateUidIdentifier("bindStyleNames"),
-          c = "".concat(
+          u = r.scope.generateUidIdentifier("getStyleName"),
+          l = r.scope.generateUidIdentifier("bindStyleNames"),
+          f = "".concat(
             i,
-            l.enableMemo
+            s.enableMemo
               ? "/dist/bindStyleNameMemo"
               : "/dist/bindStyleNamePure",
           ),
-          p = f.importDeclaration(
-            [f.importDefaultSpecifier(u)],
-            f.stringLiteral(c),
+          p = c.importDeclaration(
+            [c.importDefaultSpecifier(l)],
+            c.stringLiteral(f),
           ),
-          m = f.variableDeclaration("const", [
-            f.variableDeclarator(s, f.callExpression(u, [n])),
+          m = c.variableDeclaration("const", [
+            c.variableDeclarator(
+              u,
+              c.callExpression(l, [n, c.booleanLiteral(!!s.warning)]),
+            ),
           ]);
-        o.insertBefore(p),
-          a.insertBefore(m),
-          t.traverse(
-            (function(e, n) {
+        a.insertBefore(p),
+          o.insertBefore(m),
+          r.traverse(
+            (function(e, n, r) {
               return {
-                JSXElement: function(t) {
-                  if (t.node.openingElement.attributes.length) {
-                    var i = t.node.openingElement.attributes.find(function(e) {
-                      return "styleName" === e.name.name;
+                JSXElement: function(i) {
+                  if (i.node.openingElement.attributes.length) {
+                    var a = i.node.openingElement.attributes.find(function(e) {
+                      return e.name.name === r.targetTag;
                     });
-                    if (i) {
-                      !(function(e) {
-                        e.node.openingElement.attributes = r(
+                    if (a) {
+                      !(function(e, n) {
+                        e.node.openingElement.attributes = t(
                           e.node.openingElement.attributes.filter(function(e) {
-                            return "styleName" !== e.name.name;
+                            return e.name.name !== n.targetTag;
                           }),
                         );
-                      })(t);
+                      })(i, r);
                       var o = (function(e, n) {
                           if (e.isStringLiteral(n.value)) {
                             if (!n.value.value) return;
-                            var r = n.value.value.split(" ").map(function(n) {
+                            var t = n.value.value.split(" ").map(function(n) {
                               return e.stringLiteral(n);
                             });
-                            return r.length > 1
-                              ? e.arrayExpression(r)
-                              : r[0]
-                              ? r[0]
+                            return t.length > 1
+                              ? e.arrayExpression(t)
+                              : t[0]
+                              ? t[0]
                               : void 0;
                           }
                           return n.value.expression;
-                        })(e, i),
-                        a = e.callExpression(n, r([o].filter(Boolean))),
+                        })(e, a),
+                        u = e.callExpression(n, t([o].filter(Boolean))),
                         s = (function(e) {
                           return e.node.openingElement.attributes.find(function(
                             e,
                           ) {
                             return "className" === e.name.name;
                           });
-                        })(t);
+                        })(i);
                       if (s)
                         o &&
                           (e.isJSXExpressionContainer(s.value) &&
                             (s.value = e.JSXExpressionContainer(
-                              e.binaryExpression("+", s.value.expression, a),
+                              e.binaryExpression("+", s.value.expression, u),
                             )),
                           e.isStringLiteral(s.value) &&
                             (s.value = e.JSXExpressionContainer(
-                              e.binaryExpression("+", s.value, a),
+                              e.binaryExpression("+", s.value, u),
                             ))),
-                          (t.node.openingElement.attributes = [s]);
+                          (i.node.openingElement.attributes = [s].concat(
+                            t(
+                              i.node.openingElement.attributes.filter(function(
+                                e,
+                              ) {
+                                return "className" !== e.name.name;
+                              }),
+                            ),
+                          ));
                       else {
-                        var u = (function(e, n) {
+                        var l = (function(e, n) {
                           return e.JSXAttribute(
                             e.jsxIdentifier("className"),
                             n,
                           );
-                        })(e, e.JSXExpressionContainer(a));
-                        t.node.openingElement.attributes = [u];
+                        })(e, e.JSXExpressionContainer(u));
+                        i.node.openingElement.attributes = [l].concat(
+                          t(
+                            i.node.openingElement.attributes.filter(function(
+                              e,
+                            ) {
+                              return "className" !== e.name.name;
+                            }),
+                          ),
+                        );
                       }
                     }
                   }
                 },
               };
-            })(f, s),
+            })(c, u, s),
           );
       });
     },
     { configName: "reactCssModulesMacro" },
   );
-module.exports = a;
+module.exports = o;
 //# sourceMappingURL=react-css-modules.macro.js.map

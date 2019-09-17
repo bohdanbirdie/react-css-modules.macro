@@ -22,33 +22,46 @@
   }
   e = e && e.hasOwnProperty("default") ? e.default : e;
   var n,
-    o = function(e, t) {
-      return e
-        .map(function(e) {
-          return t[e] || e;
-        })
-        .join(" ");
-    },
-    r =
-      ((n = e),
-      function(e) {
-        return n(
-          function(n) {
-            if (n) {
-              if (Array.isArray(n)) return " ".concat(o(n, e));
-              if ("string" == typeof n) return " ".concat(o(n.split(" "), e));
-              if ("object" === t(n)) {
-                var r = Object.keys(n).filter(function(e) {
-                  return n[e];
-                });
-                return " ".concat(o(r, e));
-              }
+    o = function(e, t, n) {
+      return (
+        n &&
+          e
+            .map(function(e) {
+              return t[e]
+                ? t[e]
+                : (console.warn(
+                    "".concat(e, " key is missing in provided styles map"),
+                  ),
+                  e);
+            })
+            .join(" "),
+        e
+          .map(function(e) {
+            return t[e] || e;
+          })
+          .join(" ")
+      );
+    };
+  return (
+    (n = e),
+    function(e, r) {
+      return n(
+        function(n) {
+          if (n) {
+            if (Array.isArray(n)) return " ".concat(o(n, e, r));
+            if ("string" == typeof n) return " ".concat(o(n.split(" "), e, r));
+            if ("object" === t(n)) {
+              var i = Object.keys(n).filter(function(e) {
+                return n[e];
+              });
+              return " ".concat(o(i, e, r));
             }
-            return "";
-          },
-          { length: 1, maxAge: 5e3, primitive: !0 },
-        );
-      });
-  return console.warn("USING MEMO IMPLEMENTATION"), r;
+          }
+          return "";
+        },
+        { length: 1, maxAge: 5e3, primitive: !0 },
+      );
+    }
+  );
 });
 //# sourceMappingURL=bindStyleNameMemo.umd.js.map

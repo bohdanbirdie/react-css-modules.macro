@@ -3,8 +3,8 @@ var t,
     (t = require("memoizee")) && "object" == typeof t && "default" in t
       ? t.default
       : t;
-function r(t) {
-  return (r =
+function o(t) {
+  return (o =
     "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
       ? function(t) {
           return typeof t;
@@ -18,27 +18,40 @@ function r(t) {
             : typeof t;
         })(t);
 }
-var o,
-  e = function(t, n) {
-    return t
-      .map(function(t) {
-        return n[t] || t;
-      })
-      .join(" ");
+var r,
+  e = function(t, n, o) {
+    return (
+      o &&
+        t
+          .map(function(t) {
+            return n[t]
+              ? n[t]
+              : (console.warn(
+                  "".concat(t, " key is missing in provided styles map"),
+                ),
+                t);
+          })
+          .join(" "),
+      t
+        .map(function(t) {
+          return n[t] || t;
+        })
+        .join(" ")
+    );
   },
   i =
-    ((o = n),
-    function(t) {
-      return o(
-        function(n) {
-          if (n) {
-            if (Array.isArray(n)) return " ".concat(e(n, t));
-            if ("string" == typeof n) return " ".concat(e(n.split(" "), t));
-            if ("object" === r(n)) {
-              var o = Object.keys(n).filter(function(t) {
-                return n[t];
+    ((r = n),
+    function(t, n) {
+      return r(
+        function(r) {
+          if (r) {
+            if (Array.isArray(r)) return " ".concat(e(r, t, n));
+            if ("string" == typeof r) return " ".concat(e(r.split(" "), t, n));
+            if ("object" === o(r)) {
+              var i = Object.keys(r).filter(function(t) {
+                return r[t];
               });
-              return " ".concat(e(o, t));
+              return " ".concat(e(i, t, n));
             }
           }
           return "";
@@ -46,5 +59,5 @@ var o,
         { length: 1, maxAge: 5e3, primitive: !0 },
       );
     });
-console.warn("USING MEMO IMPLEMENTATION"), (module.exports = i);
+module.exports = i;
 //# sourceMappingURL=bindStyleNameMemo.js.map

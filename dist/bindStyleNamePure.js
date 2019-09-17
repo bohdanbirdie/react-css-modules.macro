@@ -1,44 +1,57 @@
-function t(n) {
-  return (t =
+function n(t) {
+  return (n =
     "function" == typeof Symbol && "symbol" == typeof Symbol.iterator
-      ? function(t) {
-          return typeof t;
+      ? function(n) {
+          return typeof n;
         }
-      : function(t) {
-          return t &&
+      : function(n) {
+          return n &&
             "function" == typeof Symbol &&
-            t.constructor === Symbol &&
-            t !== Symbol.prototype
+            n.constructor === Symbol &&
+            n !== Symbol.prototype
             ? "symbol"
-            : typeof t;
-        })(n);
+            : typeof n;
+        })(t);
 }
-var n,
-  r = function(t, n) {
-    return t
-      .map(function(t) {
-        return n[t] || t;
-      })
-      .join(" ");
+var t,
+  o = function(n, t, o) {
+    return (
+      o &&
+        n
+          .map(function(n) {
+            return t[n]
+              ? t[n]
+              : (console.warn(
+                  "".concat(n, " key is missing in provided styles map"),
+                ),
+                n);
+          })
+          .join(" "),
+      n
+        .map(function(n) {
+          return t[n] || n;
+        })
+        .join(" ")
+    );
   },
-  o =
-    ((n = function(t) {
-      return t;
+  r =
+    ((t = function(n) {
+      return n;
     }),
-    function(o) {
-      return n(function(n) {
-        if (n) {
-          if (Array.isArray(n)) return " ".concat(r(n, o));
-          if ("string" == typeof n) return " ".concat(r(n.split(" "), o));
-          if ("object" === t(n)) {
-            var e = Object.keys(n).filter(function(t) {
-              return n[t];
+    function(r, e) {
+      return t(function(t) {
+        if (t) {
+          if (Array.isArray(t)) return " ".concat(o(t, r, e));
+          if ("string" == typeof t) return " ".concat(o(t.split(" "), r, e));
+          if ("object" === n(t)) {
+            var i = Object.keys(t).filter(function(n) {
+              return t[n];
             });
-            return " ".concat(r(e, o));
+            return " ".concat(o(i, r, e));
           }
         }
         return "";
       });
     });
-console.warn("USING PURE IMPLEMENTATION"), (module.exports = o);
+module.exports = r;
 //# sourceMappingURL=bindStyleNamePure.js.map
