@@ -81,11 +81,11 @@ The easiest way to specify it is to add a section to the `package.json`
   },
 ```
 
-| Option     | Type    | Default value |
-| :--------- | :------ | ------------- |
-| enableMemo | boolean | true          |
-| targetTag  | string  | "styleName"   |
-| warning    | boolean | false         |
+| Option     | Type    | Default value | Description
+| :--------- | :------ | :------------ | :----------
+| enableMemo | boolean | true          | Select whether use memoization or not
+| targetTag  | string  | "styleName"   | Allow usage of custom tag name instead of `styleName`
+| warning    | boolean | false         | Enable/disable warning messages
 
 ## 🛣 Roadmap
 
