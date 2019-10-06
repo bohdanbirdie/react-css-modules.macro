@@ -87,6 +87,11 @@ The easiest way to specify it is to add a section to the `package.json`
 | targetTag  | string  | "styleName"   | Allow usage of custom tag name instead of `styleName`
 | warning    | boolean | false         | Enable/disable warning messages
 
+## 🐝 Performance
+In simple words, performance is similar to what you would do by having a function that will accept the string of classnames and will convert it to the hashed classnames.
+ (`Input -> split(' ') -> map -> find each hashed name -> join(' ')`.
+ This is basically what the injected helper function `getStyleName()` will do. There is no build-time optimization here. But there is optional runtime optimization achieved with memoization. I used the package [memoizee](https://www.npmjs.com/package/memoizee) to do such a thing. Memoization can be turned `off/on` using the config.
+
 ## 🛣 Roadmap
 
 - [ ] Improve performance
