@@ -51,7 +51,7 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
   JSXElement(path) {
     if (path.node.openingElement.attributes.length) {
       const styleNameAttr = path.node.openingElement.attributes.find(
-        attr => attr.name.name === config.targetTag,
+        attr => attr && attr.name && attr.name.name === config.targetTag,
       );
       if (styleNameAttr) {
         removeStyleNameAttr(path, config);
