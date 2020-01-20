@@ -23,6 +23,36 @@ const removeStyleNameAttr = (path, config) => {
   ];
 };
 
+const createClassNameOmmitedSpread = (spreadAttr, t) => {
+  return t.JSXSpreadAttribute(
+    t.callExpression(
+      t.ArrowFunctionExpression(
+        [],
+        t.BlockStatement([
+          t.VariableDeclaration("const", [
+            t.VariableDeclarator(
+              t.identifier("k"),
+              t.ObjectExpression([t.SpreadElement(spreadAttr.argument)]),
+            ),
+          ]),
+          t.ExpressionStatement(
+            t.UnaryExpression(
+              "delete",
+              t.memberExpression(
+                t.identifier("k"),
+                t.StringLiteral("className"),
+                true,
+              ),
+            ),
+          ),
+          t.ReturnStatement(t.identifier("k")),
+        ]),
+      ),
+      [],
+    ),
+  );
+};
+
 const findStyleNameAttrIndex = (path, config, t) => {
   const list = path.node.openingElement.attributes.map(attr => {
     return t.isJSXAttribute(attr) && ensureAttrName(attr) === config.targetTag;
@@ -43,7 +73,14 @@ const findJSXSpreadAttr = (path, t) => {
   });
 
   if (propsSpread) {
-    return t.memberExpression(propsSpread.argument, t.identifier("className"));
+    return propsSpread;
+  }
+  return false;
+};
+
+const getMemberExpressionFromSpread = (spread, t) => {
+  if (spread) {
+    return t.memberExpression(spread.argument, t.identifier("className"));
   }
   return false;
 };
@@ -78,6 +115,7 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
   JSXElement(path) {
     if (path.node.openingElement.attributes.length) {
       const spreadAttr = findJSXSpreadAttr(path, t);
+      const classNameFromSpread = getMemberExpressionFromSpread(spreadAttr, t);
       const styleNameAttrIndex = findStyleNameAttrIndex(path, config, t);
 
       const styleNameAttr = path.node.openingElement.attributes.find(
@@ -116,7 +154,7 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
             t,
             t.JSXExpressionContainer(
               spreadAttr
-                ? t.binaryExpression("+", spreadAttr, styleNameExp)
+                ? t.binaryExpression("+", classNameFromSpread, styleNameExp)
                 : styleNameExp,
             ),
           );
@@ -124,6 +162,15 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
           path.node.openingElement.attributes[
             styleNameAttrIndex
           ] = newClassNameAttr;
+          const spreadIndex = path.node.openingElement.attributes.indexOf(
+            spreadAttr,
+          );
+
+          if (spreadIndex >= 0) {
+            path.node.openingElement.attributes[
+              spreadIndex
+            ] = createClassNameOmmitedSpread(spreadAttr, t);
+          }
         }
       }
     }

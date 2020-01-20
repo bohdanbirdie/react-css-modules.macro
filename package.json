@@ -1,7 +1,7 @@
 {
   "name": "react-css-modules.macro",
   "description": "Babel macro for binding css modules to styleName attribute",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "author": {
     "name": "Bohdan Ptyts",
     "url": "https://github.com/bohdanbirdie"
