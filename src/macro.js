@@ -4,7 +4,7 @@ const { name } = require("../package.json");
 const defaultConfig = {
   enableMemo: true,
   targetTag: "styleName",
-  warning: false,
+  warning: true,
 };
 
 const ensureAttrName = attr => {
@@ -23,10 +23,29 @@ const removeStyleNameAttr = (path, config) => {
   ];
 };
 
-const findClassNameAttr = path => {
+const findStyleNameAttrIndex = (path, config, t) => {
+  const list = path.node.openingElement.attributes.map(attr => {
+    return t.isJSXAttribute(attr) && ensureAttrName(attr) === config.targetTag;
+  });
+
+  return list.indexOf(true);
+};
+
+const findClassNameAttr = (path, t) => {
   return path.node.openingElement.attributes.find(
     attr => ensureAttrName(attr) === "className",
   );
+};
+
+const findJSXSpreadAttr = (path, t) => {
+  const propsSpread = path.node.openingElement.attributes.find(attr => {
+    return t.isJSXSpreadAttribute(attr);
+  });
+
+  if (propsSpread) {
+    return t.memberExpression(propsSpread.argument, t.identifier("className"));
+  }
+  return false;
 };
 
 const createClassNameAttr = (t, value) => {
@@ -58,17 +77,20 @@ const getStyleNameAttrPayload = (t, styleNameAttr) => {
 const visitor = (t, getStyleNameIdentifier, config) => ({
   JSXElement(path) {
     if (path.node.openingElement.attributes.length) {
+      const spreadAttr = findJSXSpreadAttr(path, t);
+      const styleNameAttrIndex = findStyleNameAttrIndex(path, config, t);
+
       const styleNameAttr = path.node.openingElement.attributes.find(
         attr => ensureAttrName(attr) === config.targetTag,
       );
+
       if (styleNameAttr) {
-        removeStyleNameAttr(path, config);
         const styleNameAttrPayload = getStyleNameAttrPayload(t, styleNameAttr);
 
         const styleNameExp = t.callExpression(getStyleNameIdentifier, [
           ...[styleNameAttrPayload].filter(Boolean),
         ]);
-        const classNameAttr = findClassNameAttr(path);
+        const classNameAttr = findClassNameAttr(path, t);
 
         if (classNameAttr) {
           if (styleNameAttrPayload) {
@@ -88,25 +110,20 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
               );
             }
           }
-
-          path.node.openingElement.attributes = [
-            classNameAttr,
-            ...path.node.openingElement.attributes.filter(
-              node => ensureAttrName(node) !== "className",
-            ),
-          ];
+          removeStyleNameAttr(path, config);
         } else {
           const newClassNameAttr = createClassNameAttr(
             t,
-            t.JSXExpressionContainer(styleNameExp),
+            t.JSXExpressionContainer(
+              spreadAttr
+                ? t.binaryExpression("+", spreadAttr, styleNameExp)
+                : styleNameExp,
+            ),
           );
 
-          path.node.openingElement.attributes = [
-            newClassNameAttr,
-            ...path.node.openingElement.attributes.filter(
-              node => ensureAttrName(node) !== "className",
-            ),
-          ];
+          path.node.openingElement.attributes[
+            styleNameAttrIndex
+          ] = newClassNameAttr;
         }
       }
     }

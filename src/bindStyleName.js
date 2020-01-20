@@ -6,7 +6,9 @@ const getClassNames = (input, stylesMap, warningEnabled) => {
           return stylesMap[name];
         }
 
-        console.warn(`${name} key is missing in provided styles map`);
+        console.warn(
+          `react-css-modules: ${name} key is missing in provided styles map`,
+        );
 
         return name;
       })
