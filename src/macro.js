@@ -7,17 +7,25 @@ const defaultConfig = {
   warning: false,
 };
 
+const ensureAttrName = attr => {
+  if (attr && attr.name && attr.name.name) {
+    return attr.name.name;
+  }
+
+  return "";
+};
+
 const removeStyleNameAttr = (path, config) => {
   path.node.openingElement.attributes = [
     ...path.node.openingElement.attributes.filter(
-      attr => attr.name.name !== config.targetTag,
+      attr => ensureAttrName(attr) !== config.targetTag,
     ),
   ];
 };
 
 const findClassNameAttr = path => {
   return path.node.openingElement.attributes.find(
-    attr => attr.name.name === "className",
+    attr => ensureAttrName(attr) === "className",
   );
 };
 
@@ -51,7 +59,7 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
   JSXElement(path) {
     if (path.node.openingElement.attributes.length) {
       const styleNameAttr = path.node.openingElement.attributes.find(
-        attr => attr && attr.name && attr.name.name === config.targetTag,
+        attr => ensureAttrName(attr) === config.targetTag,
       );
       if (styleNameAttr) {
         removeStyleNameAttr(path, config);
@@ -84,7 +92,7 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
           path.node.openingElement.attributes = [
             classNameAttr,
             ...path.node.openingElement.attributes.filter(
-              node => node.name.name !== "className",
+              node => ensureAttrName(node) !== "className",
             ),
           ];
         } else {
@@ -96,7 +104,7 @@ const visitor = (t, getStyleNameIdentifier, config) => ({
           path.node.openingElement.attributes = [
             newClassNameAttr,
             ...path.node.openingElement.attributes.filter(
-              node => node.name.name !== "className",
+              node => ensureAttrName(node) !== "className",
             ),
           ];
         }
